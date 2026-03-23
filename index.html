@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentes del Código Secreto 🔐</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Paleta: azul medianoche + cian neón + violeta + dorado */
+  --ink9:#04080F;--ink8:#090F1C;--ink7:#0D1529;--ink6:#122040;--ink5:#1A2F58;
+  --cy6:#00C8E0;--cy5:#00A8BE;--cy4:#0088A0;--cy2:#9FE8F4;--cy1:#E0F8FC;
+  --vi6:#9D4EDD;--vi5:#7B2FBE;--vi4:#5A1A9B;--vi2:#D4AAFF;--vi1:#F2E8FF;
+  --go6:#F0B429;--go5:#D4920A;--go4:#A86E00;--go2:#FFE08A;--go1:#FFF8E0;
+  --gr6:#00D084;--gr5:#00A866;--gr4:#007A4A;--gr2:#80EAC0;--gr1:#E0FFF3;
+  --rd6:#FF4D6D;--rd5:#CC2244;--rd4:#991133;--rd2:#FFB3C1;--rd1:#FFF0F3;
+  --bg:#07101F;
+  --surf:#0D1A30;--surf2:#112240;--surf3:#162B50;
+  --tx:#E8F4FF;--txm:#8AABB8;
+  --bdr:rgba(0,200,224,.15);--bdrS:rgba(0,200,224,.30);
+  --ok1:#0A2818;--ok2:#00D084;--ok7:#80EAC0;
+  --no1:#2A0810;--no2:#FF4D6D;--no7:#FFB3C1;
+  --radL:18px;
+}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  min-height:100vh;color:var(--tx);
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 12px 50px;
+  background-image:
+    radial-gradient(ellipse 70% 40% at 50% 0%,rgba(0,200,224,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 90% 80%,rgba(157,78,221,.06) 0%,transparent 60%),
+    repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(0,200,224,.025) 60px,rgba(0,200,224,.025) 61px),
+    repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(0,200,224,.025) 60px,rgba(0,200,224,.025) 61px)
+}
+
+/* HEADER */
+.hdr{width:100%;max-width:740px;display:flex;align-items:center;justify-content:space-between;padding:0 4px 18px;gap:12px}
+.hdr-title{font-family:'Fredoka One',cursive;font-size:22px;color:var(--cy6);line-height:1;text-shadow:0 0 18px rgba(0,200,224,.4)}
+.hdr-title span{color:var(--vi2)}
+.hdr-sub{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--txm);text-transform:uppercase;margin-top:2px;font-family:'Share Tech Mono',monospace}
+.score-pill{display:flex;align-items:center;gap:7px;background:var(--surf2);
+  border:1px solid var(--bdrS);border-radius:99px;padding:6px 14px;
+  font-size:13px;font-weight:700;color:var(--cy6);flex-shrink:0}
+
+/* CARD */
+.card{width:100%;max-width:740px;background:var(--surf);border-radius:var(--radL);
+  border:1px solid var(--bdr);
+  box-shadow:0 0 0 1px rgba(0,200,224,.06),0 8px 40px rgba(0,0,0,.5);overflow:hidden}
+
+/* PROGRESS */
+.prog-area{padding:16px 24px 0;display:flex;align-items:center;gap:10px}
+.ch-tag{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--cy5);white-space:nowrap;background:var(--surf2);
+  padding:3px 10px;border-radius:99px;border:1px solid var(--bdrS);font-family:'Share Tech Mono',monospace}
+.bar-wrap{flex:1;height:6px;background:var(--surf3);border-radius:99px;overflow:hidden;border:1px solid var(--bdr)}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--cy4),var(--cy6));border-radius:99px;
+  transition:width .55s cubic-bezier(.22,.68,0,.99);box-shadow:0 0 8px rgba(0,200,224,.5)}
+
+/* BODY */
+.sbody{padding:14px 24px 6px}
+.illus{text-align:center;font-size:54px;padding:4px 0 8px;line-height:1;animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* CIPHER DECORATION — mono font blocks */
+.cipher-strip{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;color:rgba(0,200,224,.25);
+  text-align:center;padding:4px 0 8px;
+  letter-spacing:.15em;overflow:hidden;white-space:nowrap;
+}
+
+/* CHAT */
+.crow{display:flex;align-items:flex-start;gap:12px;margin-bottom:11px}
+.av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;border:2px solid;}
+.av-n{background:rgba(0,200,224,.12);border-color:var(--cy5)}
+.av-s{background:rgba(157,78,221,.15);border-color:var(--vi5)}   /* Sofia */
+.av-m{background:rgba(240,180,41,.12);border-color:var(--go5)}   /* Máx */
+.av-v{background:rgba(0,208,132,.12);border-color:var(--gr5)}    /* Prof. Vega */
+.av-x{background:rgba(255,77,109,.12);border-color:var(--rd5)}   /* Villano */
+
+.bub{background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:13px;border-top-left-radius:3px;padding:9px 13px;flex:1}
+.bub-name{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:3px;color:var(--txm);font-family:'Share Tech Mono',monospace}
+.bub p{font-size:14px;line-height:1.65;color:var(--tx)}
+
+/* INFO BLOCKS */
+.ib{border-radius:12px;padding:12px 15px;margin:9px 0;border:1px solid}
+.ib-cy{background:rgba(0,200,224,.07);border-color:rgba(0,200,224,.25)}
+.ib-vi{background:rgba(157,78,221,.08);border-color:rgba(157,78,221,.28)}
+.ib-go{background:rgba(240,180,41,.08);border-color:rgba(240,180,41,.25)}
+.ib-gr{background:rgba(0,208,132,.07);border-color:rgba(0,208,132,.25)}
+.ib-rd{background:rgba(255,77,109,.07);border-color:rgba(255,77,109,.25)}
+.ib-title{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:6px;font-family:'Share Tech Mono',monospace}
+.ib-cy .ib-title{color:var(--cy5)}.ib-vi .ib-title{color:var(--vi5)}
+.ib-go .ib-title{color:var(--go5)}.ib-gr .ib-title{color:var(--gr5)}.ib-rd .ib-title{color:var(--rd5)}
+.ib p{font-size:13.5px;line-height:1.65;color:var(--tx)}
+.mono{font-family:'Share Tech Mono',monospace;font-size:13px;
+  background:var(--surf3);border:1px solid var(--bdrS);border-radius:8px;
+  padding:8px 12px;margin:6px 0;color:var(--cy6);letter-spacing:.08em;display:block}
+
+/* CHOICES */
+.carea{padding:10px 24px 22px;display:flex;flex-direction:column;gap:8px}
+.hint{font-size:12px;color:var(--txm);font-weight:600;text-align:center;padding:2px 0 5px}
+.qbadge{display:inline-flex;align-items:center;gap:5px;background:rgba(157,78,221,.15);
+  color:var(--vi2);font-size:11px;font-weight:800;padding:4px 12px;border-radius:99px;
+  border:1px solid rgba(157,78,221,.35);margin-bottom:7px;letter-spacing:.05em;font-family:'Share Tech Mono',monospace}
+.qq{font-size:14px;color:var(--txm);font-weight:700;margin-bottom:9px;line-height:1.5}
+
+.abtn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:11px;
+  border:1.5px solid rgba(0,200,224,.2);background:var(--surf2);font-family:'Nunito',sans-serif;
+  font-size:14px;font-weight:600;color:var(--tx);cursor:pointer;text-align:left;
+  transition:background .15s,border-color .15s,transform .15s;width:100%}
+.abtn:hover:not(:disabled){background:var(--surf3);border-color:var(--cy5);transform:translateX(3px)}
+.abtn .lbl{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;
+  border-radius:50%;background:var(--surf3);border:1.5px solid rgba(0,200,224,.25);
+  font-size:12px;font-weight:800;flex-shrink:0;color:var(--txm);
+  font-family:'Share Tech Mono',monospace;transition:background .15s,color .15s;padding:0 2px}
+.abtn.correct{background:var(--ok1);border-color:var(--ok2);color:var(--ok7)}
+.abtn.correct .lbl{background:var(--gr5);border-color:var(--gr6);color:#fff}
+.abtn.wrong{background:var(--no1);border-color:var(--no2);color:var(--no7)}
+.abtn.wrong .lbl{background:var(--rd5);border-color:var(--rd6);color:#fff}
+.abtn:disabled{pointer-events:none;opacity:.45}
+.abtn.go-btn{background:rgba(0,208,132,.12);border-color:var(--gr5);color:var(--gr2);display:none}
+.abtn.retry-btn{background:rgba(240,180,41,.1);border-color:var(--go5);color:var(--go2)}
+.abtn.replay-btn{background:rgba(0,208,132,.12);border-color:var(--gr5);color:var(--gr2)}
+
+.fb{border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;line-height:1.5;display:none;margin-top:2px}
+.fb.ok{display:block;background:var(--ok1);border:1px solid var(--ok2);color:var(--ok7)}
+.fb.bad{display:block;background:var(--no1);border:1px solid var(--no2);color:var(--no7)}
+
+.scene{display:none}
+.scene.active{display:block;animation:fadeUp .32s cubic-bezier(.22,.68,0,.99)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* FINAL */
+.sum-header{text-align:center;padding:8px 0 14px}
+.sum-big{font-size:36px;letter-spacing:5px}
+.sum-msg{font-family:'Fredoka One',cursive;font-size:20px;color:var(--cy6);margin-top:7px;
+  text-shadow:0 0 14px rgba(0,200,224,.3)}
+.sum-sub{font-size:13px;color:var(--txm);margin-top:4px}
+.sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 6px}
+.sstat{background:var(--surf2);border:1px solid var(--bdr);border-radius:11px;padding:10px 8px;text-align:center}
+.sstat .sv{font-size:24px;font-weight:800;color:var(--cy6);font-family:'Fredoka One',cursive}
+.sstat .sl{font-size:11px;color:var(--txm);font-weight:700;margin-top:2px}
+.stitle{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--cy5);margin:14px 0 6px;padding-left:2px;font-family:'Share Tech Mono',monospace}
+.stable{width:100%;border-collapse:collapse;font-size:13px}
+.stable th{text-align:left;padding:6px 8px;font-size:10px;font-weight:800;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--txm);border-bottom:1px solid var(--bdr)}
+.stable td{padding:7px 8px;border-bottom:1px solid var(--bdr);vertical-align:top;line-height:1.4}
+.stable tr:last-child td{border-bottom:none}
+.tok{display:inline-block;background:var(--ok1);color:var(--ok7);border-radius:99px;
+  padding:2px 9px;font-size:11px;font-weight:800;border:1px solid var(--ok2)}
+.tno{display:inline-block;background:var(--no1);color:var(--no7);border-radius:99px;
+  padding:2px 9px;font-size:11px;font-weight:800;border:1px solid var(--no2)}
+
+/* MAPA CONCEPTUAL */
+.map-section{padding:0 24px 28px}
+.map-title{font-family:'Fredoka One',cursive;font-size:18px;color:var(--cy6);
+  margin-bottom:14px;text-align:center;padding-top:8px;text-shadow:0 0 12px rgba(0,200,224,.3)}
+.map-scroll{overflow-x:auto;border-radius:14px;border:1px solid var(--bdr);background:var(--ink8)}
+.map-scroll svg{display:block;margin:0 auto}
+
+/* TOOLTIP */
+.tt{position:fixed;background:var(--surf2);border:1px solid var(--bdrS);border-radius:11px;
+  padding:9px 13px;font-size:12.5px;line-height:1.55;max-width:240px;pointer-events:none;
+  opacity:0;transition:opacity .15s;z-index:99;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);font-family:'Nunito',sans-serif;color:var(--tx)}
+.tt.on{opacity:1}
+.tt b{color:var(--cy6)}
+
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:var(--surf3);border-radius:99px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-title">🔐 Agentes del <span>Código Secreto</span></div>
+    <div class="hdr-sub">Misión: descifrar el mundo de la criptografía</div>
+  </div>
+  <div class="score-pill">🔑 <span id="hstars">☆☆☆☆☆</span>&nbsp;<span id="hcount" style="color:var(--cy6)">0/0</span></div>
+</div>
+
+<div class="card">
+
+<!-- ═══ S0 INTRO ═══ -->
+<div class="scene active" id="s0">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 01 — RECLUTAMIENTO</span><div class="bar-wrap"><div class="bar-fill" style="width:3%"></div></div></div>
+  <div class="sbody">
+    <div class="cipher-strip">01001000 01101111 01101100 01100001 00100001 ··· S3CR3T0 ··· 7A4B9F ··· CIFRADO</div>
+    <div class="illus">🕵️</div>
+    <div class="crow"><div class="av av-n">📡</div><div class="bub"><div class="bub-name">Mensaje Transmitido</div>
+      <p>ATENCIÓN. Estamos buscando a los agentes más inteligentes del mundo. Esta es <strong>Sofía</strong> —12 años, fanática de los acertijos— y su amigo <strong>Máx</strong> —11 años, experto en computación. Hoy recibieron un sobre misterioso en la puerta de su casa.</p></div></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>Máx, ¡mira esto! El sobre dice: <strong>"IFMMP BHFOUFT"</strong>. ¿Qué significa? ¡Cada letra está desplazada una posición! H→G, I→H... ¡es un mensaje cifrado!</p></div></div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>¡Exacto! Si desplazamos cada letra un paso hacia atrás en el abecedario: I→H, F→E, M→L, M→L, P→O... ¡dice <strong>"HELLO AGENTS"</strong>! Alguien nos está reclutando.</p></div></div>
+    <div class="ib ib-cy"><div class="ib-title">🔐 ¿Qué es la Criptografía?</div>
+      <p>La <strong>criptografía</strong> es el arte de escribir mensajes secretos que solo pueden leer quienes tienen la "llave". Existe desde hace <strong>más de 4000 años</strong>: los egipcios, griegos y romanos ya la usaban. Hoy protege tus contraseñas, tus mensajes de WhatsApp y tus compras en internet.</p></div>
+  </div>
+  <div class="carea">
+    <div class="hint">¿Aceptan Sofía y Máx la misión?</div>
+    <button class="abtn" onclick="go('s1a')"><span class="lbl">A</span> Sí — aceptan el reto y entran a la academia secreta</button>
+    <button class="abtn" onclick="go('s1b')"><span class="lbl">B</span> No — ignoran el sobre, parece peligroso</button>
+  </div>
+</div>
+
+<!-- ═══ S1B DESVÍO ═══ -->
+<div class="scene" id="s1b">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 01 — DESVÍO</span><div class="bar-wrap"><div class="bar-fill" style="width:7%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">😬</div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>Sofía, creo que cometimos un error. La curiosidad es la primera herramienta de un buen criptógrafo. Si Julius César hubiera ignorado los mensajes secretos, Roma habría caído mucho antes.</p></div></div>
+    <div class="ib ib-go"><div class="ib-title">💡 La curiosidad como herramienta</div>
+      <p>Los mejores criptógrafos de la historia —Alan Turing, Ada Lovelace, Grace Hopper— tenían algo en común: nunca ignoraban un acertijo. La curiosidad intelectual es el motor de todos los grandes descubrimientos.</p></div>
+  </div>
+  <div class="carea"><button class="abtn retry-btn" onclick="go('s1a')"><span class="lbl">→</span> Sofía y Máx deciden aceptar el reto</button></div>
+</div>
+
+<!-- ═══ S1A CIFRADO CÉSAR ═══ -->
+<div class="scene" id="s1a">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 01 — CIFRADO CÉSAR</span><div class="bar-wrap"><div class="bar-fill" style="width:12%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🏛️</div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega — Directora de la Academia</div>
+      <p>¡Bienvenidos, agentes! Soy la <strong>Profesora Vega</strong>. Hoy empezarán con el cifrado más antiguo y famoso: el <strong>Cifrado César</strong>. Julio César lo usaba para enviar órdenes militares secretas hace más de 2000 años.</p></div></div>
+    <div class="ib ib-cy"><div class="ib-title">🏛️ El Cifrado César — Cómo funciona</div>
+      <p>Consiste en <strong>desplazar cada letra del abecedario</strong> un número fijo de posiciones. Si el desplazamiento es 3:<br>
+      <strong>Original:</strong> A B C D E F G H I J K...<br>
+      <strong>Cifrado:</strong> D E F G H I J K L M N...</p>
+      <code class="mono">HOLA → KROD (desplazamiento +3)</code>
+      <p>Para descifrar, simplemente aplicas el desplazamiento en sentido contrario. <strong>La clave</strong> es el número de posiciones que desplazas.</p></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>¡Entiendo! Si César usaba +3, entonces <strong>DWDTXH</strong> significaría... A-3=D→A, W-3=T→A, D-3=A→T... ¡dice <strong>ATAQUE</strong>! ¡Es genial!</p></div></div>
+    <div class="ib ib-go"><div class="ib-title">⚠️ La debilidad del Cifrado César</div>
+      <p>El Cifrado César solo tiene <strong>25 claves posibles</strong> (el tamaño del abecedario). Un atacante puede probarlas todas en menos de un minuto. Por eso se llama un cifrado "débil": con fuerza bruta —probando todas las opciones— se rompe rápidamente.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 01 / 15</div>
+    <div class="qq">¿En qué consiste el Cifrado César?</div>
+    <button class="abtn" id="q1a" onclick="ans('q1','wrong',this,'q1fb','q1nx')"><span class="lbl">A</span> En reemplazar cada letra por un símbolo inventado por César</button>
+    <button class="abtn" id="q1b" onclick="ans('q1','correct',this,'q1fb','q1nx')"><span class="lbl">B</span> En desplazar cada letra del abecedario un número fijo de posiciones</button>
+    <button class="abtn" id="q1c" onclick="ans('q1','wrong',this,'q1fb','q1nx')"><span class="lbl">C</span> En escribir el mensaje al revés usando un espejo</button>
+    <div class="fb" id="q1fb"></div>
+    <button class="abtn go-btn" id="q1nx" onclick="go('s1q2')"><span class="lbl">→</span> Siguiente pregunta</button>
+  </div>
+</div>
+
+<!-- ═══ S1Q2 ═══ -->
+<div class="scene" id="s1q2">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 01 — CIFRADO CÉSAR</span><div class="bar-wrap"><div class="bar-fill" style="width:18%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">⚔️</div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>Profe Vega, ¿y cómo sabía el receptor cuántas posiciones debía desplazar para descifrar?</p></div></div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>¡Excelente pregunta, Máx! César y sus generales acordaban el número de posiciones <strong>de antemano</strong>, en persona. A ese número secreto compartido lo llamamos la <strong>clave</strong>. Este es el principio más importante de toda la criptografía: emisor y receptor deben compartir un secreto.</p></div></div>
+    <div class="ib ib-vi"><div class="ib-title">🔑 Conceptos clave en criptografía</div>
+      <p><strong>Texto plano:</strong> el mensaje original y legible.<br>
+         <strong>Texto cifrado:</strong> el mensaje encriptado, ilegible sin la clave.<br>
+         <strong>Cifrar (encriptar):</strong> transformar el texto plano en cifrado.<br>
+         <strong>Descifrar (desencriptar):</strong> convertir el texto cifrado de vuelta al plano.<br>
+         <strong>Clave:</strong> el secreto que permite cifrar y descifrar.</p></div>
+    <div class="ib ib-cy"><div class="ib-title">🧩 Fuerza bruta</div>
+      <p>Cuando un atacante prueba <strong>todas las claves posibles</strong> hasta dar con la correcta, se llama <strong>ataque de fuerza bruta</strong>. El César tiene solo 25 opciones. Los cifrados modernos tienen trillones de opciones, haciendo la fuerza bruta prácticamente imposible.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 02 / 15</div>
+    <div class="qq">¿Por qué el Cifrado César se considera un cifrado débil?</div>
+    <button class="abtn" id="q2a" onclick="ans('q2','correct',this,'q2fb','q2nx')"><span class="lbl">A</span> Porque solo tiene 25 claves posibles que se pueden probar todas rápidamente</button>
+    <button class="abtn" id="q2b" onclick="ans('q2','wrong',this,'q2fb','q2nx')"><span class="lbl">B</span> Porque César lo inventó hace mucho tiempo y ya no funciona</button>
+    <button class="abtn" id="q2c" onclick="ans('q2','wrong',this,'q2fb','q2nx')"><span class="lbl">C</span> Porque necesita una computadora para funcionar correctamente</button>
+    <div class="fb" id="q2fb"></div>
+    <button class="abtn go-btn" id="q2nx" onclick="go('s2')"><span class="lbl">→</span> Continuar misión</button>
+  </div>
+</div>
+
+<!-- ═══ S2 CIFRADO POR SUSTITUCIÓN Y FRECUENCIA ═══ -->
+<div class="scene" id="s2">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 02 — ANÁLISIS DE FRECUENCIA</span><div class="bar-wrap"><div class="bar-fill" style="width:24%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">📊</div>
+    <div class="crow"><div class="av av-n">📡</div><div class="bub"><div class="bub-name">Mensaje de la Academia</div>
+      <p>Los agentes recibieron un mensaje cifrado interceptado al villano <strong>NEXUS-7</strong>, que quiere robar contraseñas de toda la ciudad. El mensaje está en un cifrado de sustitución. La Profesora Vega les explica cómo romperlo.</p></div></div>
+    <div class="ib ib-cy"><div class="ib-title">📊 Cifrado por sustitución y análisis de frecuencia</div>
+      <p>En el <strong>cifrado por sustitución</strong>, cada letra se reemplaza siempre por la misma otra letra o símbolo. Se puede romper con el <strong>análisis de frecuencia</strong>: en español, las letras más frecuentes son <strong>E, A, O, S, N</strong>. Si en el texto cifrado la letra "Q" aparece muchísimo, probablemente es la "E".</p>
+      <code class="mono">Español: E(14%) A(12%) O(9%) S(7%) N(7%)</code></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>¡Es como un detective lingüístico! El matemático árabe <strong>Al-Kindi</strong> inventó esta técnica hace más de 1000 años. Contó cuántas veces aparecía cada letra en el texto cifrado y así dedujo qué letra era cada símbolo.</p></div></div>
+    <div class="ib ib-vi"><div class="ib-title">🏆 Al-Kindi: el primer criptoanalista</div>
+      <p>Abu Yusuf Al-Kindi (siglo IX) escribió el primer manual de criptoanálisis conocido. Su técnica del análisis de frecuencia revolucionó la seguridad de los mensajes: demostró que ningún cifrado de sustitución simple es verdaderamente seguro. Fue uno de los grandes genios del mundo árabe.</p></div>
+  </div>
+  <div class="carea">
+    <div class="hint">¿Cómo rompen el mensaje del villano NEXUS-7?</div>
+    <button class="abtn" onclick="go('s2a')"><span class="lbl">A</span> Usando análisis de frecuencia de las letras</button>
+    <button class="abtn" onclick="go('s2b')"><span class="lbl">B</span> Probando todas las sustituciones al azar</button>
+  </div>
+</div>
+
+<!-- ═══ S2B DESVÍO ═══ -->
+<div class="scene" id="s2b">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 02 — DESVÍO</span><div class="bar-wrap"><div class="bar-fill" style="width:22%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">😅</div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>Sofía... un cifrado de sustitución tiene 26 factorial (26!) de combinaciones posibles. Eso son más de 4 cuatrillones de opciones. ¡Probarlas todas nos tomaría más tiempo que la edad del universo!</p></div></div>
+    <div class="ib ib-rd"><div class="ib-title">⚠️ Por qué la fuerza bruta no siempre funciona</div>
+      <p>26! = 403.291.461.126.605.635.584.000.000 combinaciones posibles. Una computadora moderna que pruebe un millón por segundo tardaría más de 12 billones de años. Por eso el análisis de frecuencia fue tan revolucionario.</p></div>
+  </div>
+  <div class="carea"><button class="abtn retry-btn" onclick="go('s2a')"><span class="lbl">→</span> Usar análisis de frecuencia correctamente</button></div>
+</div>
+
+<!-- ═══ S2A Q3 ═══ -->
+<div class="scene" id="s2a">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 02 — ANÁLISIS DE FRECUENCIA</span><div class="bar-wrap"><div class="bar-fill" style="width:30%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🔍</div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>¡Funcionó! El mensaje de NEXUS-7 decía que iba a atacar el servidor de la biblioteca escolar a las 3pm. ¡Llegamos a tiempo de avisarle al director!</p></div></div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>¡Brillante trabajo, agentes! Pero NEXUS-7 también usa técnicas modernas. Para la siguiente misión aprenderán sobre cifrados más poderosos que el análisis de frecuencia no puede romper.</p></div></div>
+    <div class="ib ib-go"><div class="ib-title">🧮 Criptoanálisis vs Criptografía</div>
+      <p>La <strong>criptografía</strong> crea cifrados para proteger mensajes. El <strong>criptoanálisis</strong> intenta romper esos cifrados. Ambas disciplinas se impulsan mutuamente: cada vez que alguien rompe un cifrado, los criptógrafos crean uno más fuerte. Es una carrera armamentista intelectual continua.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 03 / 15</div>
+    <div class="qq">¿En qué se basa el análisis de frecuencia para descifrar un mensaje?</div>
+    <button class="abtn" id="q3a" onclick="ans('q3','wrong',this,'q3fb','q3nx')"><span class="lbl">A</span> En probar todas las claves posibles una por una hasta encontrar la correcta</button>
+    <button class="abtn" id="q3b" onclick="ans('q3','correct',this,'q3fb','q3nx')"><span class="lbl">B</span> En que ciertas letras (E, A, O) aparecen más seguido en un idioma</button>
+    <button class="abtn" id="q3c" onclick="ans('q3','wrong',this,'q3fb','q3nx')"><span class="lbl">C</span> En usar una computadora para calcular automáticamente el texto original</button>
+    <div class="fb" id="q3fb"></div>
+    <button class="abtn go-btn" id="q3nx" onclick="go('s2q4')"><span class="lbl">→</span> Siguiente pregunta</button>
+  </div>
+</div>
+
+<!-- ═══ S2Q4 ═══ -->
+<div class="scene" id="s2q4">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 02 — ANÁLISIS DE FRECUENCIA</span><div class="bar-wrap"><div class="bar-fill" style="width:34%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🧮</div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>Ahora que conocen el análisis de frecuencia, aprenderán a defenderlo. En el siglo XVI, Blaise de Vigenère inventó un cifrado que hace inútil el análisis de frecuencia: el <strong>Cifrado Vigenère</strong>. Usaba una <strong>palabra clave</strong> en lugar de un número.</p></div></div>
+    <div class="ib ib-cy"><div class="ib-title">🔐 Cifrado Vigenère — La clave es una palabra</div>
+      <p>En lugar de desplazar siempre el mismo número, cada letra se desplaza según la letra correspondiente de la clave. Si la clave es <strong>SOL</strong>, la primera letra se desplaza S(18), la segunda O(14), la tercera L(11), la cuarta S(18) otra vez, y así.</p>
+      <code class="mono">Texto: H O L A M U N D O
+Clave: S O L S O L S O L
+Cifr:  Z C W S A F F R Z</code>
+      <p>Así la misma letra "O" se cifra de formas distintas, haciendo inútil el análisis de frecuencia.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 04 / 15</div>
+    <div class="qq">¿Qué ventaja tiene el Cifrado Vigenère sobre el Cifrado César?</div>
+    <button class="abtn" id="q4a" onclick="ans('q4','wrong',this,'q4fb','q4nx')"><span class="lbl">A</span> Es más fácil de recordar porque usa letras en lugar de números</button>
+    <button class="abtn" id="q4b" onclick="ans('q4','correct',this,'q4fb','q4nx')"><span class="lbl">B</span> La misma letra se cifra de formas distintas, rompiendo el análisis de frecuencia</button>
+    <button class="abtn" id="q4c" onclick="ans('q4','wrong',this,'q4fb','q4nx')"><span class="lbl">C</span> Es más antiguo y por eso más probado y confiable</button>
+    <div class="fb" id="q4fb"></div>
+    <button class="abtn go-btn" id="q4nx" onclick="go('s3')"><span class="lbl">→</span> Continuar misión</button>
+  </div>
+</div>
+
+<!-- ═══ S3 ENIGMA Y WWII ═══ -->
+<div class="scene" id="s3">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 03 — MÁQUINA ENIGMA</span><div class="bar-wrap"><div class="bar-fill" style="width:40%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">⚙️</div>
+    <div class="crow"><div class="av av-n">📡</div><div class="bub"><div class="bub-name">Mensaje de la Academia</div>
+      <p>La siguiente sala del museo de la criptografía tiene una réplica de la máquina más famosa de la historia: la <strong>Máquina Enigma</strong>. Sofía y Máx se acercan fascinados.</p></div></div>
+    <div class="ib ib-vi"><div class="ib-title">⚙️ La Máquina Enigma</div>
+      <p>Usada por los nazis durante la Segunda Guerra Mundial (1939-1945), Enigma era una máquina electromecánica que generaba un cifrado diferente para <strong>cada letra que se escribía</strong>. Tenía más de <strong>150 trillones de configuraciones posibles</strong>. Los alemanes la consideraban irrompible.</p></div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>¡Pero Alan Turing la rompió! El matemático británico construyó la <strong>Bomba</strong>, una máquina electromecánica que usaba la lógica matemática para encontrar la configuración de Enigma cada día. Se cree que esto acortó la guerra en <strong>2 a 4 años</strong> y salvó millones de vidas.</p></div></div>
+    <div class="ib ib-go"><div class="ib-title">🧠 Alan Turing — El padre de la computación</div>
+      <p>Alan Turing (1912-1954) es considerado el padre de la ciencia de la computación. Además de romper Enigma, formuló el concepto de <strong>máquina de Turing</strong>, el modelo matemático que define qué puede y no puede hacer una computadora. Hoy el premio más importante en informática se llama <strong>Premio Turing</strong>.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 05 / 15</div>
+    <div class="qq">¿Por qué la Máquina Enigma se consideraba irrompible?</div>
+    <button class="abtn" id="q5a" onclick="ans('q5','wrong',this,'q5fb','q5nx')"><span class="lbl">A</span> Porque era de metal muy grueso y nadie podía abrirla físicamente</button>
+    <button class="abtn" id="q5b" onclick="ans('q5','correct',this,'q5fb','q5nx')"><span class="lbl">B</span> Porque tenía más de 150 trillones de configuraciones posibles</button>
+    <button class="abtn" id="q5c" onclick="ans('q5','wrong',this,'q5fb','q5nx')"><span class="lbl">C</span> Porque solo los nazis conocían el idioma alemán para descifrarla</button>
+    <div class="fb" id="q5fb"></div>
+    <button class="abtn go-btn" id="q5nx" onclick="go('s3q6')"><span class="lbl">→</span> Siguiente pregunta</button>
+  </div>
+</div>
+
+<!-- ═══ S3Q6 ═══ -->
+<div class="scene" id="s3q6">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 03 — MÁQUINA ENIGMA</span><div class="bar-wrap"><div class="bar-fill" style="width:45%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">💻</div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>Entonces Turing no solo salvó vidas, ¡inventó el concepto de computadora! Pero Profe, ¿cómo se comunican hoy de forma segura millones de personas que <em>nunca se han conocido</em> y no pueden acordar una clave en persona, como hacía César con sus generales?</p></div></div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>Sofía, acabas de formular el <strong>problema más importante de la criptografía moderna</strong>. Ese problema se resolvió en 1976 con el cifrado de <strong>llave pública</strong>. Es como tener un buzón con candado abierto: cualquiera puede echarle mensajes, pero solo tú tienes la llave para abrirlo.</p></div></div>
+    <div class="ib ib-cy"><div class="ib-title">📬 El problema del intercambio de claves</div>
+      <p>Hasta 1976, todos los cifrados requerían que emisor y receptor compartieran la misma clave <strong>de antemano</strong> (clave simétrica). Pero si un banco y un cliente nunca se han visto, ¿cómo acuerdan esa clave sin que alguien la intercepte? Eso era imposible... hasta que apareció la criptografía asimétrica.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 06 / 15</div>
+    <div class="qq">¿Cuál fue el gran aporte de Alan Turing durante la Segunda Guerra Mundial?</div>
+    <button class="abtn" id="q6a" onclick="ans('q6','wrong',this,'q6fb','q6nx')"><span class="lbl">A</span> Inventar la Máquina Enigma para los Aliados</button>
+    <button class="abtn" id="q6b" onclick="ans('q6','wrong',this,'q6fb','q6nx')"><span class="lbl">B</span> Descifrar los mensajes de César de los nazis</button>
+    <button class="abtn" id="q6c" onclick="ans('q6','correct',this,'q6fb','q6nx')"><span class="lbl">C</span> Construir la Bomba, una máquina que rompió el cifrado Enigma y acortó la guerra</button>
+    <div class="fb" id="q6fb"></div>
+    <button class="abtn go-btn" id="q6nx" onclick="go('s4')"><span class="lbl">→</span> Continuar misión</button>
+  </div>
+</div>
+
+<!-- ═══ S4 CLAVE PÚBLICA ═══ -->
+<div class="scene" id="s4">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 04 — LLAVE PÚBLICA</span><div class="bar-wrap"><div class="bar-fill" style="width:51%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🔓</div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>La <strong>criptografía de llave pública</strong> usa DOS llaves: una <strong>pública</strong> que compartes con todos, y una <strong>privada</strong> que solo tú conoces. Lo que se cifra con la pública solo puede descifrarse con la privada. Así dos desconocidos pueden comunicarse de forma segura.</p></div></div>
+    <div class="ib ib-vi"><div class="ib-title">🔑 Criptografía Simétrica vs Asimétrica</div>
+      <p><strong>Simétrica</strong> (antigua): misma clave para cifrar y descifrar. Rápida pero requiere compartir la clave antes. Ejemplo: AES.<br>
+         <strong>Asimétrica</strong> (moderna): llave pública para cifrar + llave privada para descifrar. Lenta pero no requiere compartir secretos. Ejemplo: RSA.<br>
+         Los sistemas modernos usan <strong>ambas</strong>: asimétrica para intercambiar claves, luego simétrica para la comunicación.</p></div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>¡Es lo que hace el candado verde 🔒 del navegador! Cuando visitas un sitio con <strong>HTTPS</strong>, tu computadora y el servidor usan criptografía asimétrica para acordar una clave en milisegundos, sin que nadie en internet pueda verla.</p></div></div>
+    <div class="ib ib-gr"><div class="ib-title">🌐 HTTPS — Criptografía en tu vida diaria</div>
+      <p>El protocolo <strong>HTTPS</strong> (Hypertext Transfer Protocol <em>Secure</em>) usa cifrado TLS/SSL para proteger tu conexión con sitios web. El candado verde en el navegador significa que tus datos viajan cifrados y nadie en el camino puede leerlos. Esto protege tus contraseñas, número de tarjeta y mensajes.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 07 / 15</div>
+    <div class="qq">En la criptografía de llave pública, ¿qué hace la llave privada?</div>
+    <button class="abtn" id="q7a" onclick="ans('q7','wrong',this,'q7fb','q7nx')"><span class="lbl">A</span> Cifra el mensaje para que nadie más pueda leerlo</button>
+    <button class="abtn" id="q7b" onclick="ans('q7','correct',this,'q7fb','q7nx')"><span class="lbl">B</span> Descifra los mensajes que fueron cifrados con la llave pública</button>
+    <button class="abtn" id="q7c" onclick="ans('q7','wrong',this,'q7fb','q7nx')"><span class="lbl">C</span> Se comparte con todos para que puedan enviarte mensajes</button>
+    <div class="fb" id="q7fb"></div>
+    <button class="abtn go-btn" id="q7nx" onclick="go('s4q8')"><span class="lbl">→</span> Siguiente pregunta</button>
+  </div>
+</div>
+
+<!-- ═══ S4Q8 ═══ -->
+<div class="scene" id="s4q8">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 04 — LLAVE PÚBLICA</span><div class="bar-wrap"><div class="bar-fill" style="width:56%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🔒</div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>Entonces cuando le mando un mensaje a mi amiga por WhatsApp, ¿alguien puede leerlo?</p></div></div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>WhatsApp usa <strong>cifrado de extremo a extremo</strong>. Eso significa que el mensaje se cifra en tu teléfono y solo se descifra en el teléfono de tu amiga. Ni siquiera WhatsApp puede leerlo. Solo alguien con acceso físico a uno de los dos teléfonos podría verlo.</p></div></div>
+    <div class="ib ib-cy"><div class="ib-title">💬 Cifrado de extremo a extremo (E2E)</div>
+      <p>En el cifrado <strong>end-to-end</strong>, el mensaje se cifra en el dispositivo del emisor y solo se descifra en el del receptor. Nadie en el medio —ni el proveedor del servicio, ni los gobiernos, ni los hackers— puede leerlo. WhatsApp, Signal e iMessage usan este sistema. Es la forma más segura de comunicación digital.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 08 / 15</div>
+    <div class="qq">¿Qué significa que WhatsApp usa "cifrado de extremo a extremo"?</div>
+    <button class="abtn" id="q8a" onclick="ans('q8','wrong',this,'q8fb','q8nx')"><span class="lbl">A</span> Que los mensajes se borran automáticamente después de 24 horas</button>
+    <button class="abtn" id="q8b" onclick="ans('q8','wrong',this,'q8fb','q8nx')"><span class="lbl">B</span> Que WhatsApp revisa los mensajes para verificar que sean seguros</button>
+    <button class="abtn" id="q8c" onclick="ans('q8','correct',this,'q8fb','q8nx')"><span class="lbl">C</span> Que solo los teléfonos del emisor y receptor pueden leer el mensaje, ni WhatsApp puede verlo</button>
+    <div class="fb" id="q8fb"></div>
+    <button class="abtn go-btn" id="q8nx" onclick="go('s5')"><span class="lbl">→</span> Continuar misión</button>
+  </div>
+</div>
+
+<!-- ═══ S5 CONTRASEÑAS Y HASH ═══ -->
+<div class="scene" id="s5">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 05 — CONTRASEÑAS Y HASH</span><div class="bar-wrap"><div class="bar-fill" style="width:62%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🛡️</div>
+    <div class="crow"><div class="av av-x">🦹</div><div class="bub"><div class="bub-name">NEXUS-7 (mensaje interceptado)</div>
+      <p>Muahahaha... si no pueden descifrar mis mensajes, atacaré sus contraseñas. La contraseña de Sofía es <strong>"gato123"</strong>. ¡Qué fácil!</p></div></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>¡Oh no, esa sí era mi contraseña! Profe Vega, ¿cómo hago una contraseña segura? Y espera... ¿los sitios web guardan mis contraseñas como texto normal?</p></div></div>
+    <div class="ib ib-vi"><div class="ib-title">🔐 Función Hash — La huella digital de datos</div>
+      <p>Un sitio web seguro <strong>nunca guarda tu contraseña</strong>. Guarda su <strong>hash</strong>: una especie de huella digital matemática. Al iniciar sesión, convierte lo que escribes en hash y lo compara. Si coinciden, accedes. El hash es de <strong>un solo sentido</strong>: puedes ir de contraseña→hash pero no de hash→contraseña.</p>
+      <code class="mono">gato123 → 7a3f9c2b... (SHA-256)
+perro456 → 9d1e4a7f... (completamente diferente)</code></div>
+    <div class="ib ib-go"><div class="ib-title">🔑 Cómo crear una contraseña segura</div>
+      <p>Una buena contraseña debe:<br>
+         ✓ Tener <strong>12+ caracteres</strong>.<br>
+         ✓ Mezclar <strong>mayúsculas, minúsculas, números y símbolos</strong>.<br>
+         ✓ No ser una palabra del diccionario ni información personal.<br>
+         ✓ Ser <strong>única</strong> para cada sitio.<br>
+         Mejor aún: usa una <strong>frase</strong> como contraseña: "MiPerroSeLlama#Fido2018" es muy segura y fácil de recordar.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 09 / 15</div>
+    <div class="qq">¿Por qué los sitios web guardan el "hash" de tu contraseña y no la contraseña en sí?</div>
+    <button class="abtn" id="q9a" onclick="ans('q9','correct',this,'q9fb','q9nx')"><span class="lbl">A</span> Porque si hackean el sitio, no pueden recuperar tu contraseña original del hash</button>
+    <button class="abtn" id="q9b" onclick="ans('q9','wrong',this,'q9fb','q9nx')"><span class="lbl">B</span> Para ahorrar espacio en los servidores del sitio web</button>
+    <button class="abtn" id="q9c" onclick="ans('q9','wrong',this,'q9fb','q9nx')"><span class="lbl">C</span> Porque el hash es más fácil de recordar que la contraseña original</button>
+    <div class="fb" id="q9fb"></div>
+    <button class="abtn go-btn" id="q9nx" onclick="go('s5q10')"><span class="lbl">→</span> Siguiente pregunta</button>
+  </div>
+</div>
+
+<!-- ═══ S5Q10 ═══ -->
+<div class="scene" id="s5q10">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 05 — CONTRASEÑAS Y HASH</span><div class="bar-wrap"><div class="bar-fill" style="width:67%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🧩</div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>NEXUS-7 también usa algo llamado "ingeniería social". No intenta romper el cifrado matemáticamente, sino <strong>engañar a las personas</strong> para que le den sus claves voluntariamente. Eso se llama <strong>phishing</strong>.</p></div></div>
+    <div class="ib ib-rd"><div class="ib-title">🎣 Phishing — El anzuelo digital</div>
+      <p>El <strong>phishing</strong> es un ataque donde el atacante se hace pasar por alguien de confianza (tu banco, Google, un amigo) para que le des tu contraseña o información personal. Llega por correo, SMS o mensajes falsos. El mejor cifrado del mundo no sirve si tú mismo entregas la clave al atacante.</p></div>
+    <div class="ib ib-cy"><div class="ib-title">🛡️ Cómo identificar un intento de phishing</div>
+      <p>• El remitente tiene un correo raro (goog1e.com en lugar de google.com).<br>
+         • Te pide tu contraseña con urgencia ("¡Tu cuenta será cerrada en 1 hora!").<br>
+         • El enlace lleva a un sitio que se parece al real pero no es igual.<br>
+         • Te pide información que el servicio real nunca pediría por mensaje.<br>
+         <strong>Regla de oro:</strong> ningún servicio legítimo te pedirá tu contraseña por correo o chat.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 10 / 15</div>
+    <div class="qq">¿Qué es el phishing?</div>
+    <button class="abtn" id="q10a" onclick="ans('q10','wrong',this,'q10fb','q10nx')"><span class="lbl">A</span> Un tipo de virus que cifra tus archivos y pide dinero</button>
+    <button class="abtn" id="q10b" onclick="ans('q10','correct',this,'q10fb','q10nx')"><span class="lbl">B</span> Un engaño donde alguien finge ser de confianza para robar tus contraseñas</button>
+    <button class="abtn" id="q10c" onclick="ans('q10','wrong',this,'q10fb','q10nx')"><span class="lbl">C</span> Un ataque que descifra contraseñas probando millones de combinaciones</button>
+    <div class="fb" id="q10fb"></div>
+    <button class="abtn go-btn" id="q10nx" onclick="go('s6')"><span class="lbl">→</span> Continuar misión</button>
+  </div>
+</div>
+
+<!-- ═══ S6 ESTEGANOGRAFÍA Y FIRMA DIGITAL ═══ -->
+<div class="scene" id="s6">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 06 — SECRETOS OCULTOS</span><div class="bar-wrap"><div class="bar-fill" style="width:73%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🖼️</div>
+    <div class="crow"><div class="av av-n">📡</div><div class="bub"><div class="bub-name">Mensaje de la Academia</div>
+      <p>NEXUS-7 cambió de táctica. Ahora esconde mensajes <strong>dentro de imágenes</strong> que parecen completamente normales. La Profesora Vega les explica esta técnica milenaria.</p></div></div>
+    <div class="ib ib-vi"><div class="ib-title">🖼️ Esteganografía — Ocultar lo que existe</div>
+      <p>La <strong>esteganografía</strong> no cifra un mensaje, sino que lo <strong>esconde</strong> dentro de otro objeto: una imagen, un audio o un video. En la Segunda Guerra Mundial, los espías usaban tinta invisible. Hoy, una foto de un paisaje puede contener un mensaje secreto en sus píxeles que el ojo humano no puede detectar.</p></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>¡Es diferente a la criptografía! La criptografía convierte el mensaje en algo ilegible pero <em>visible</em>. La esteganografía hace el mensaje <em>invisible</em> pero legible si lo encuentras. Lo ideal es combinar ambas: ocultar un mensaje ya cifrado.</p></div></div>
+    <div class="ib ib-go"><div class="ib-title">✍️ Firma Digital — Identidad en internet</div>
+      <p>Una <strong>firma digital</strong> usa criptografía para garantizar que un mensaje realmente viene de quien dice ser y que no fue modificado. Funciona al revés que el cifrado: usas tu llave <em>privada</em> para "firmar" y cualquiera puede verificar con tu llave <em>pública</em>. Es la base de los contratos electrónicos y los certificados de identidad digital.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 11 / 15</div>
+    <div class="qq">¿Cuál es la diferencia principal entre criptografía y esteganografía?</div>
+    <button class="abtn" id="q11a" onclick="ans('q11','correct',this,'q11fb','q11nx')"><span class="lbl">A</span> La criptografía hace el mensaje ilegible; la esteganografía lo hace invisible</button>
+    <button class="abtn" id="q11b" onclick="ans('q11','wrong',this,'q11fb','q11nx')"><span class="lbl">B</span> La criptografía es antigua; la esteganografía es solo tecnología moderna</button>
+    <button class="abtn" id="q11c" onclick="ans('q11','wrong',this,'q11fb','q11nx')"><span class="lbl">C</span> La esteganografía es más segura porque usa matemáticas más complejas</button>
+    <div class="fb" id="q11fb"></div>
+    <button class="abtn go-btn" id="q11nx" onclick="go('s6q12')"><span class="lbl">→</span> Siguiente pregunta</button>
+  </div>
+</div>
+
+<!-- ═══ S6Q12 ═══ -->
+<div class="scene" id="s6q12">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 06 — SECRETOS OCULTOS</span><div class="bar-wrap"><div class="bar-fill" style="width:78%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🌐</div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>Profe, ¿y qué pasa con Bitcoin y las criptomonedas? Escuché que también usan criptografía.</p></div></div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>¡Exacto! Bitcoin usa criptografía de llave pública para que cada persona tenga una "dirección" única (como número de cuenta), y funciones hash para encadenar todas las transacciones en un <strong>blockchain</strong>: una cadena de bloques que nadie puede modificar sin romper toda la cadena.</p></div></div>
+    <div class="ib ib-cy"><div class="ib-title">⛓️ Blockchain — La cadena inquebrantable</div>
+      <p>Un <strong>blockchain</strong> es como un libro de cuentas público donde cada página (bloque) contiene el hash de la página anterior. Si alguien modifica una transacción, cambia su hash, lo que rompe el hash del siguiente bloque y el siguiente... haciendo evidente la trampa. Es casi imposible falsificar sin controlar toda la red.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 12 / 15</div>
+    <div class="qq">¿Para qué sirve una firma digital?</div>
+    <button class="abtn" id="q12a" onclick="ans('q12','wrong',this,'q12fb','q12nx')"><span class="lbl">A</span> Para cifrar el contenido de un mensaje y que nadie más pueda leerlo</button>
+    <button class="abtn" id="q12b" onclick="ans('q12','wrong',this,'q12fb','q12nx')"><span class="lbl">B</span> Para cambiar la contraseña de tu cuenta de forma segura</button>
+    <button class="abtn" id="q12c" onclick="ans('q12','correct',this,'q12fb','q12nx')"><span class="lbl">C</span> Para verificar que un mensaje viene de quien dice ser y no fue modificado</button>
+    <div class="fb" id="q12fb"></div>
+    <button class="abtn go-btn" id="q12nx" onclick="go('s7')"><span class="lbl">→</span> ¡Misión final!</button>
+  </div>
+</div>
+
+<!-- ═══ S7 MISIÓN FINAL ═══ -->
+<div class="scene" id="s7">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 07 — CONFRONTACIÓN FINAL</span><div class="bar-wrap"><div class="bar-fill" style="width:87%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🏆</div>
+    <div class="crow"><div class="av av-n">📡</div><div class="bub"><div class="bub-name">Mensaje Urgente</div>
+      <p>NEXUS-7 intentó hackear el sistema escolar cifrando sus comandos con un código que mezcla César + Vigenère + esteganografía. Solo Sofía y Máx, con todo lo aprendido, pueden neutralizarlo.</p></div></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>¡Máx, primero extraemos el mensaje oculto de la imagen con análisis de píxeles, luego aplicamos análisis de frecuencia para el César, y finalmente usamos la clave pública de la academia para verificar la firma de NEXUS-7. ¡Tenemos todo lo necesario!</p></div></div>
+    <div class="crow"><div class="av av-x">🦹</div><div class="bub"><div class="bub-name">NEXUS-7</div>
+      <p>¡Imposible! ¿Cómo... dos niños de 10 años rompieron mi supercifrado? ¡La criptografía era mi arma secreta!</p></div></div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>La criptografía es un arma de <strong>protección</strong>, no de ataque. Y el conocimiento siempre vence a la ignorancia. ¡Misión completada, agente Sofía!</p></div></div>
+    <div class="ib ib-gr"><div class="ib-title">🌐 La criptografía cuántica — El futuro</div>
+      <p>Las computadoras cuánticas podrían romper los cifrados RSA actuales. Por eso ya se desarrolla la <strong>criptografía post-cuántica</strong>: nuevos algoritmos que ni las computadoras cuánticas pueden romper. La carrera entre criptógrafos y criptoanalistas continúa en el siglo XXI.</p></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 13 / 15</div>
+    <div class="qq">¿Qué es una función hash en criptografía?</div>
+    <button class="abtn" id="q13a" onclick="ans('q13','wrong',this,'q13fb','q13nx')"><span class="lbl">A</span> Una clave secreta que se comparte entre dos personas</button>
+    <button class="abtn" id="q13b" onclick="ans('q13','correct',this,'q13fb','q13nx')"><span class="lbl">B</span> Una huella digital matemática de un dato que no se puede revertir</button>
+    <button class="abtn" id="q13c" onclick="ans('q13','wrong',this,'q13fb','q13nx')"><span class="lbl">C</span> Un algoritmo para descifrar mensajes cifrados por sustitución</button>
+    <div class="fb" id="q13fb"></div>
+    <button class="abtn go-btn" id="q13nx" onclick="go('s7q14')"><span class="lbl">→</span> Siguiente pregunta</button>
+  </div>
+</div>
+
+<!-- ═══ S7Q14 ═══ -->
+<div class="scene" id="s7q14">
+  <div class="prog-area"><span class="ch-tag">MISIÓN 07 — ÚLTIMAS PREGUNTAS</span><div class="bar-wrap"><div class="bar-fill" style="width:92%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🎓</div>
+    <div class="crow"><div class="av av-v">👩‍🏫</div><div class="bub"><div class="bub-name">Profesora Vega</div>
+      <p>Sofía, Máx: hoy aprendieron que la criptografía no es solo matemáticas abstractas. Está en cada WhatsApp, cada compra online, cada contraseña y cada candado verde del navegador. Protege la privacidad de <strong>miles de millones de personas</strong> cada segundo.</p></div></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>Empezamos con Julio César hace 2000 años y llegamos a WhatsApp y Bitcoin. La criptografía es la columna vertebral silenciosa de toda la civilización digital. ¡Y nosotros ahora somos parte de ella!</p></div></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 14 / 15</div>
+    <div class="qq">¿Qué protege el candado verde (HTTPS) en el navegador?</div>
+    <button class="abtn" id="q14a" onclick="ans('q14','wrong',this,'q14fb','q14nx')"><span class="lbl">A</span> Que el sitio web no tiene virus ni malware descargable</button>
+    <button class="abtn" id="q14b" onclick="ans('q14','correct',this,'q14fb','q14nx')"><span class="lbl">B</span> Que la conexión está cifrada y nadie puede interceptar tus datos</button>
+    <button class="abtn" id="q14c" onclick="ans('q14','wrong',this,'q14fb','q14nx')"><span class="lbl">C</span> Que el sitio ha sido verificado como el más popular en internet</button>
+    <div class="fb" id="q14fb"></div>
+    <button class="abtn go-btn" id="q14nx" onclick="go('s7q15')"><span class="lbl">→</span> ¡Última pregunta!</button>
+  </div>
+</div>
+
+<!-- ═══ S7Q15 ═══ -->
+<div class="scene" id="s7q15">
+  <div class="prog-area"><span class="ch-tag">PREGUNTA FINAL</span><div class="bar-wrap"><div class="bar-fill" style="width:97%"></div></div></div>
+  <div class="sbody">
+    <div class="illus">🔐</div>
+    <div class="crow"><div class="av av-m">👦</div><div class="bub"><div class="bub-name">Máx</div>
+      <p>Sofía, si tuvieras que explicarle a alguien en una oración qué es la criptografía, ¿qué dirías?</p></div></div>
+    <div class="crow"><div class="av av-s">👧</div><div class="bub"><div class="bub-name">Sofía</div>
+      <p>Diría que la criptografía es el arte y la ciencia de proteger información transformándola, de modo que solo quien tiene la clave pueda entenderla. Ha existido siempre que los seres humanos hemos tenido secretos que proteger.</p></div></div>
+  </div>
+  <div class="carea">
+    <div class="qbadge">🔑 PREGUNTA 15 / 15 — ¡LA FINAL!</div>
+    <div class="qq">¿Cuál es el mensaje principal de la misión de Sofía y Máx?</div>
+    <button class="abtn" id="q15a" onclick="ans('q15','wrong',this,'q15fb','q15nx')"><span class="lbl">A</span> Que solo los matemáticos adultos pueden entender y usar la criptografía</button>
+    <button class="abtn" id="q15b" onclick="ans('q15','wrong',this,'q15fb','q15nx')"><span class="lbl">B</span> Que los cifrados modernos son imposibles de romper y siempre estaremos seguros</button>
+    <button class="abtn" id="q15c" onclick="ans('q15','correct',this,'q15fb','q15nx')"><span class="lbl">C</span> Que entender criptografía protege nuestra privacidad y está en nuestra vida diaria</button>
+    <div class="fb" id="q15fb"></div>
+    <button class="abtn go-btn" id="q15nx" onclick="go('sfinal')"><span class="lbl">🏆</span> Ver resultado final</button>
+  </div>
+</div>
+
+<!-- ═══ FINAL ═══ -->
+<div class="scene" id="sfinal">
+  <div class="prog-area"><span class="ch-tag">MISIÓN COMPLETADA ✓</span><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></div>
+  <div class="sbody">
+    <div class="cipher-strip">4D 49 53 49 4F 4E 20 43 4F 4D 50 4C 45 54 41 44 41 ··· AGENT CERTIFIED ··· ACCESS GRANTED</div>
+    <div class="illus" style="animation:none;font-size:60px">🏅</div>
+    <div class="sum-header">
+      <div class="sum-big" id="fstars">⭐⭐⭐</div>
+      <div class="sum-msg" id="fmsg"></div>
+      <div class="sum-sub" id="fsub"></div>
+    </div>
+    <div class="sum-grid">
+      <div class="sstat"><div class="sv" id="sv-ok">0</div><div class="sl">Correctas ✓</div></div>
+      <div class="sstat"><div class="sv" id="sv-no">0</div><div class="sl">Para repasar ✗</div></div>
+      <div class="sstat"><div class="sv" id="sv-pct">0%</div><div class="sl">Puntaje</div></div>
+    </div>
+    <div class="stitle">// REPORTE DE MISIÓN — PREGUNTA POR PREGUNTA</div>
+    <table class="stable">
+      <thead><tr><th style="width:36px">#</th><th>Concepto evaluado</th><th style="width:96px;text-align:center">Estado</th></tr></thead>
+      <tbody id="stbody"></tbody>
+    </table>
+    <div id="repaso-block" style="display:none">
+      <div class="stitle">// MÓDULOS PARA REPASAR</div>
+      <div class="ib ib-go" id="repaso-list"></div>
+    </div>
+    <div class="ib ib-cy" style="margin-top:10px">
+      <div class="ib-title">✅ Lo que aprendiste con Sofía y Máx</div>
+      <p>✦ <strong>Cifrado César:</strong> desplazar letras un número fijo de posiciones.<br>
+         ✦ <strong>Análisis de frecuencia:</strong> romper cifrados por la frecuencia de letras.<br>
+         ✦ <strong>Vigenère:</strong> clave-palabra que neutraliza el análisis de frecuencia.<br>
+         ✦ <strong>Máquina Enigma:</strong> rota por Turing, cambió el rumbo de la WWII.<br>
+         ✦ <strong>Llave pública/privada:</strong> criptografía asimétrica, base de internet.<br>
+         ✦ <strong>HTTPS y E2E:</strong> criptografía en WhatsApp y navegadores.<br>
+         ✦ <strong>Hash:</strong> huella digital matemática de una sola dirección.<br>
+         ✦ <strong>Phishing:</strong> el mayor peligro no es matemático, es el engaño.<br>
+         ✦ <strong>Esteganografía:</strong> ocultar mensajes dentro de imágenes.<br>
+         ✦ <strong>Firma digital y blockchain:</strong> identidad e integridad en lo digital.</p>
+    </div>
+  </div>
+
+  <!-- MAPA CONCEPTUAL -->
+  <div class="map-section">
+    <div class="map-title">🗺️ Mapa Conceptual — Criptografía</div>
+    <div class="map-scroll">
+      <svg id="mapa" xmlns="http://www.w3.org/2000/svg" width="1040" height="1020" viewBox="0 0 1040 1020"></svg>
+    </div>
+  </div>
+
+  <div class="carea" style="padding-top:0">
+    <button class="abtn replay-btn" onclick="resetGame()"><span class="lbl">🔄</span> Nueva misión desde el inicio</button>
+  </div>
+</div>
+
+</div><!-- /card -->
+<div class="tt" id="tt"></div>
+
+<script>
+/* ── QUIZ ── */
+var score=0,total=0,answered={},log=[];
+var QINFO={
+  q1:'Qué es el Cifrado César',
+  q2:'Por qué el César es un cifrado débil',
+  q3:'Cómo funciona el análisis de frecuencia',
+  q4:'Ventaja del Cifrado Vigenère sobre el César',
+  q5:'Por qué Enigma era considerada irrompible',
+  q6:'Aporte de Alan Turing en la WWII',
+  q7:'Para qué sirve la llave privada',
+  q8:'Significado del cifrado de extremo a extremo',
+  q9:'Por qué se guarda el hash de contraseñas',
+  q10:'Qué es el phishing',
+  q11:'Diferencia entre criptografía y esteganografía',
+  q12:'Para qué sirve una firma digital',
+  q13:'Qué es una función hash',
+  q14:'Qué protege el candado HTTPS',
+  q15:'Mensaje principal de la historia'
+};
+var OKS=['🔑 ¡Acceso concedido! Respuesta correcta.','🔑 ¡Cifrado descifrado! Muy bien.','🔑 ¡Correcto, agente! Misión parcial completada.','🔑 ¡Excelente! Sofía y Máx estarían orgullosos.','🔑 ¡Perfecto! Eres un agente criptógrafo certificado.'];
+var NOPE=['⛔ Acceso denegado. La respuesta correcta está en verde.','⛔ No es esa. Revisa la información del módulo.','⛔ Incorrecto. Mira la respuesta correcta marcada.'];
+
+function go(id){
+  document.querySelectorAll('.scene').forEach(function(s){s.classList.remove('active');});
+  var t=document.getElementById(id);
+  if(t){t.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+  if(id==='sfinal'){buildFinal();buildMap();}
+}
+function ans(qid,type,btn,fbId,nextId){
+  if(answered[qid])return;
+  answered[qid]=true;total++;
+  var fb=document.getElementById(fbId);
+  var area=btn.closest('.carea');
+  var allBtns=area.querySelectorAll('.abtn:not(.go-btn):not(.retry-btn):not(.replay-btn)');
+  allBtns.forEach(function(b){b.disabled=true;});
+  var ok=(type==='correct');
+  if(ok){score++;btn.classList.add('correct');fb.className='fb ok';fb.innerHTML=OKS[Math.floor(Math.random()*OKS.length)];}
+  else{
+    btn.classList.add('wrong');fb.className='fb bad';fb.innerHTML=NOPE[Math.floor(Math.random()*NOPE.length)];
+    allBtns.forEach(function(b){if((b.getAttribute('onclick')||'').indexOf("'correct'")!==-1)b.classList.add('correct');});
+  }
+  log.push({q:qid,tema:QINFO[qid]||qid,ok:ok});
+  document.getElementById(nextId).style.display='flex';
+  updateHdr();
+}
+function updateHdr(){
+  var f=total>0?Math.round((score/total)*5):0;
+  var s='';for(var i=0;i<5;i++)s+=(i<f?'⭐':'☆');
+  document.getElementById('hstars').textContent=s;
+  document.getElementById('hcount').textContent=score+'/'+total;
+}
+function buildFinal(){
+  var pct=total>0?Math.round((score/total)*100):0;
+  var f=Math.round(pct/20);
+  var s='';for(var i=0;i<5;i++)s+=(i<f?'⭐':'☆');
+  document.getElementById('fstars').textContent=s;
+  var msgs=['¡Sigue estudiando, recluta!','¡Buen intento! Repasa los módulos.','¡Aprobado! Agente nivel intermedio.','¡Excelente! Agente criptógrafo certificado.','🏆 ¡PERFECTO! Maestro de la Criptografía.'];
+  document.getElementById('fmsg').textContent=msgs[f]||msgs[3];
+  document.getElementById('fsub').textContent='Respondiste '+score+' de '+total+' correctamente ('+pct+'%)';
+  document.getElementById('sv-ok').textContent=score;
+  document.getElementById('sv-no').textContent=total-score;
+  document.getElementById('sv-pct').textContent=pct+'%';
+  var tbody=document.getElementById('stbody');tbody.innerHTML='';
+  log.forEach(function(item,i){
+    var tr=document.createElement('tr');
+    tr.innerHTML='<td style="font-weight:800;color:var(--txm);font-family:\'Share Tech Mono\',monospace">'+(i<9?'0':'')+(i+1)+'</td>'+
+      '<td style="font-size:13px">'+item.tema+'</td>'+
+      '<td style="text-align:center">'+(item.ok?'<span class="tok">✓ OK</span>':'<span class="tno">✗ Repasar</span>')+'</td>';
+    tbody.appendChild(tr);
+  });
+  var malos=log.filter(function(x){return !x.ok;});
+  if(malos.length>0){
+    document.getElementById('repaso-block').style.display='block';
+    var html='<div class="ib-title" style="color:var(--go5)">// MÓDULOS PENDIENTES</div><p>';
+    malos.forEach(function(m,i){html+=(i+1)+'. '+m.tema+'<br>';});
+    html+='</p>';
+    document.getElementById('repaso-list').innerHTML=html;
+  }
+}
+function resetGame(){
+  score=0;total=0;answered={};log=[];mapBuilt=false;updateHdr();
+  document.querySelectorAll('.fb').forEach(function(f){f.className='fb';f.innerHTML='';});
+  document.querySelectorAll('.abtn').forEach(function(b){
+    b.classList.remove('correct','wrong');b.disabled=false;
+    if(b.classList.contains('go-btn'))b.style.display='none';
+  });
+  document.getElementById('repaso-block').style.display='none';
+  document.getElementById('mapa').innerHTML='';
+  go('s0');
+}
+
+/* ── MAPA CONCEPTUAL ── */
+var mapBuilt=false;
+function buildMap(){
+  if(mapBuilt)return;mapBuilt=true;
+  var NS='http://www.w3.org/2000/svg';
+  var svg=document.getElementById('mapa');
+
+  var THEMES=[
+    {label:'Cifrados\nClásicos',icon:'🏛️',fill:'#0D1A30',stroke:'#00C8E0',tc:'#9FE8F4',
+     tip:'Cifrado César, Vigenère y otros cifrados históricos basados en sustitución y transposición de letras.',
+     children:[
+       {label:'César',icon:'⚔️',fill:'#0A1525',stroke:'#00A8BE',tc:'#9FE8F4',tip:'Desplaza cada letra un número fijo. Solo 25 claves posibles, fácil de romper por fuerza bruta.'},
+       {label:'Vigenère',icon:'📜',fill:'#0A1525',stroke:'#00A8BE',tc:'#9FE8F4',tip:'Usa una palabra como clave. La misma letra se cifra diferente en cada posición, neutralizando el análisis de frecuencia.'},
+     ]},
+    {label:'Criptoanálisis',icon:'🔍',fill:'#150D2A',stroke:'#9D4EDD',tc:'#D4AAFF',
+     tip:'Ciencia de romper cifrados. Complemento necesario de la criptografía: cada ataque impulsa mejores defensas.',
+     children:[
+       {label:'Análisis de\nFrecuencia',icon:'📊',fill:'#120A25',stroke:'#7B2FBE',tc:'#D4AAFF',tip:'Inventado por Al-Kindi (s.IX). Usa la frecuencia natural de letras (E,A,O) para deducir sustituciones.'},
+       {label:'Fuerza\nBruta',icon:'💪',fill:'#120A25',stroke:'#7B2FBE',tc:'#D4AAFF',tip:'Probar todas las claves posibles. Funciona con César (25 claves) pero imposible con cifrados modernos.'},
+     ]},
+    {label:'Criptografía\nModerna',icon:'💻',fill:'#0A1A10',stroke:'#00D084',tc:'#80EAC0',
+     tip:'Cifrados basados en problemas matemáticos extremadamente difíciles, como factorizar números enormes.',
+     children:[
+       {label:'Llave\nPública',icon:'🔓',fill:'#081510',stroke:'#00A866',tc:'#80EAC0',tip:'Dos llaves: pública (cifrar, compartible) y privada (descifrar, secreta). Permite comunicación segura entre desconocidos. Base de RSA.'},
+       {label:'Llave\nSimétrica',icon:'🔑',fill:'#081510',stroke:'#00A866',tc:'#80EAC0',tip:'Misma clave para cifrar y descifrar (ej. AES). Muy rápida. Se usa para la comunicación una vez acordada la clave.'},
+     ]},
+    {label:'Aplicaciones\nDigitales',icon:'🌐',fill:'#0A1520',stroke:'#F0B429',tc:'#FFE08A',
+     tip:'Usos de la criptografía en la vida diaria: navegación, mensajería, contraseñas y firmas electrónicas.',
+     children:[
+       {label:'HTTPS\ny E2E',icon:'🔒',fill:'#0D120A',stroke:'#D4920A',tc:'#FFE08A',tip:'HTTPS cifra tu conexión al navegar. E2E (extremo a extremo) en WhatsApp/Signal asegura que ni el proveedor puede leer tus mensajes.'},
+       {label:'Hash y\nContraseñas',icon:'🛡️',fill:'#0D120A',stroke:'#D4920A',tc:'#FFE08A',tip:'Las contraseñas se guardan como hash (huella matemática irreversible). Si hackean el sitio, no obtienen tu contraseña real.'},
+     ]},
+    {label:'Seguridad\nDigital',icon:'🛡️',fill:'#200A10',stroke:'#FF4D6D',tc:'#FFB3C1',
+     tip:'Amenazas y buenas prácticas para proteger tu identidad e información en el mundo digital.',
+     children:[
+       {label:'Phishing',icon:'🎣',fill:'#1A0810',stroke:'#CC2244',tc:'#FFB3C1',tip:'Engaño que simula ser de confianza para robar contraseñas. El mayor peligro no es matemático sino humano.'},
+       {label:'Firma\nDigital',icon:'✍️',fill:'#1A0810',stroke:'#CC2244',tc:'#FFB3C1',tip:'Usa llave privada para "firmar" mensajes. Cualquiera con la llave pública verifica su autenticidad. Base de contratos electrónicos.'},
+     ]},
+    {label:'Historia y\nFuturo',icon:'🚀',fill:'#100A20',stroke:'#9D4EDD',tc:'#D4AAFF',
+     tip:'De los jeroglíficos egipcios y César, pasando por Enigma y Turing, hasta blockchain y la criptografía cuántica.',
+     children:[
+       {label:'Enigma\ny Turing',icon:'⚙️',fill:'#0D0818',stroke:'#7B2FBE',tc:'#D4AAFF',tip:'La Máquina Enigma (WWII) tenía 150 trillones de configuraciones. Alan Turing la rompió con la Bomba, acortando la guerra 2-4 años.'},
+       {label:'Blockchain\ny Cuántica',icon:'⛓️',fill:'#0D0818',stroke:'#7B2FBE',tc:'#D4AAFF',tip:'Blockchain usa hash encadenados para crear registros inmutables (Bitcoin). La criptografía post-cuántica prepara defensas para las computadoras cuánticas.'},
+     ]},
+  ];
+
+  function el(tag,attrs){
+    var e=document.createElementNS(NS,tag);
+    for(var k in attrs)e.setAttribute(k,attrs[k]);
+    return e;
+  }
+  var defs=el('defs',{});
+  var flt=el('filter',{id:'ms',x:'-20%',y:'-20%',width:'140%',height:'140%'});
+  flt.appendChild(el('feDropShadow',{dx:'0',dy:'2',stdDeviation:'5','flood-color':'rgba(0,0,0,.6)'}));
+  defs.appendChild(flt);
+
+  // grid pattern background
+  var pat=el('pattern',{id:'grid',width:'40',height:'40',patternUnits:'userSpaceOnUse'});
+  var pl1=el('line',{x1:'40',y1:'0',x2:'40',y2:'40',stroke:'rgba(0,200,224,.06)','stroke-width':'0.5'});
+  var pl2=el('line',{x1:'0',y1:'40',x2:'40',y2:'40',stroke:'rgba(0,200,224,.06)','stroke-width':'0.5'});
+  pat.appendChild(pl1);pat.appendChild(pl2);defs.appendChild(pat);
+  svg.appendChild(defs);
+
+  // bg rect
+  svg.appendChild(el('rect',{width:'1040',height:'1020',fill:'url(#grid)'}));
+
+  var CX=520,CY=88,TW=170,TH=74,CW=150,CH=62;
+  var COLS=[160,520,880],ROWS=[255,580];
+  function tp(i){return{x:COLS[i%3],y:ROWS[Math.floor(i/3)]};}
+  function cp(pos,ci,tot){
+    var gap=156;var sx=pos.x-((tot-1)*gap)/2;
+    return{x:sx+ci*gap,y:pos.y+172};
+  }
+
+  var cl=el('g',{});svg.appendChild(cl);
+  function curve(x1,y1,x2,y2,stroke,dash){
+    var cx1=x1+(x2-x1)*.15,cy1=y1+(y2-y1)*.6;
+    var cx2=x2-(x2-x1)*.15,cy2=y1+(y2-y1)*.4;
+    var p=el('path',{d:'M'+x1+','+y1+' C'+cx1+','+cy1+' '+cx2+','+cy2+' '+x2+','+y2,
+      fill:'none',stroke:stroke,'stroke-width':'1.8','stroke-opacity':'.5','stroke-dasharray':dash||''});
+    cl.appendChild(p);
+  }
+
+  // glow dots at junctions
+  function glowDot(x,y,col){
+    var c=el('circle',{cx:x,cy:y,r:'3',fill:col,opacity:'.7'});
+    cl.appendChild(c);
+  }
+
+  THEMES.forEach(function(th,i){
+    var pos=tp(i);
+    curve(CX,CY+37,pos.x,pos.y-TH/2-2,th.stroke,'');
+    glowDot(pos.x,pos.y-TH/2-2,th.stroke);
+    th.children.forEach(function(ch,ci){
+      var c=cp(pos,ci,th.children.length);
+      curve(pos.x,pos.y+TH/2+2,c.x,c.y-CH/2-2,th.stroke,'4 3');
+    });
+  });
+
+  var tip=document.getElementById('tt');
+  function addNode(x,y,w,h,r,data,big){
+    var g=el('g',{style:'cursor:pointer'});
+    // glow outline
+    var glow=el('rect',{x:x-w/2-2,y:y-h/2-2,width:w+4,height:h+4,rx:r+1,ry:r+1,
+      fill:'none',stroke:data.stroke,'stroke-width':'1','stroke-opacity':'.25',rx:r+2});
+    g.appendChild(glow);
+    var box=el('rect',{x:x-w/2,y:y-h/2,width:w,height:h,rx:r,ry:r,
+      fill:data.fill,stroke:data.stroke,'stroke-width':'1.8',filter:'url(#ms)'});
+    g.appendChild(box);
+    var iT=el('text',{x:x-w/2+18,y:y,'text-anchor':'middle','dominant-baseline':'middle',
+      'font-size':big?'22':'17'});
+    iT.textContent=data.icon;g.appendChild(iT);
+    var lines=(data.label||'').split('\n');
+    var lx=x+9,fs=big?'13':'11.5',lh=parseFloat(fs)*1.28;
+    var tot2=lines.length*lh;
+    lines.forEach(function(line,li){
+      var t=el('text',{x:lx,y:y-tot2/2+lh/2+li*lh,
+        'text-anchor':'middle','dominant-baseline':'middle',
+        'font-size':fs,'font-weight':'800','font-family':'Nunito,sans-serif',fill:data.tc});
+      t.textContent=line;g.appendChild(t);
+    });
+    g.addEventListener('mouseenter',function(){
+      tip.innerHTML='<b>'+(data.label||'').replace('\n',' ')+'</b><br>'+(data.tip||'');
+      tip.classList.add('on');
+    });
+    g.addEventListener('mousemove',function(e){
+      var tx=e.clientX+14,ty=e.clientY-8;
+      if(tx+250>window.innerWidth)tx=e.clientX-254;
+      tip.style.left=tx+'px';tip.style.top=ty+'px';
+    });
+    g.addEventListener('mouseleave',function(){tip.classList.remove('on');});
+    svg.appendChild(g);
+  }
+
+  // center
+  addNode(CX,CY,178,76,38,{
+    label:'Criptografía',icon:'🔐',
+    fill:'#0D1A30',stroke:'#00C8E0',tc:'#9FE8F4',
+    tip:'Arte y ciencia de proteger información transformándola de modo que solo quien tiene la clave pueda entenderla. Existe desde hace más de 4000 años.'
+  },true);
+
+  THEMES.forEach(function(th,i){
+    var pos=tp(i);
+    addNode(pos.x,pos.y,TW,TH,14,th,false);
+    th.children.forEach(function(ch,ci){
+      var c=cp(pos,ci,th.children.length);
+      addNode(c.x,c.y,CW,CH,11,ch,false);
+    });
+  });
+
+  var SLABELS=[
+    {x:COLS[0],y:ROWS[0]-TH/2-24,text:'HISTORIA',c:'#00A8BE'},
+    {x:COLS[1],y:ROWS[0]-TH/2-24,text:'ANÁLISIS',c:'#7B2FBE'},
+    {x:COLS[2],y:ROWS[0]-TH/2-24,text:'ALGORITMOS',c:'#00A866'},
+    {x:COLS[0],y:ROWS[1]-TH/2-24,text:'APLICACIONES',c:'#D4920A'},
+    {x:COLS[1],y:ROWS[1]-TH/2-24,text:'AMENAZAS',c:'#CC2244'},
+    {x:COLS[2],y:ROWS[1]-TH/2-24,text:'EVOLUCIÓN',c:'#7B2FBE'},
+  ];
+  SLABELS.forEach(function(lb){
+    var bg=el('rect',{x:lb.x-72,y:lb.y-11,width:144,height:22,rx:99,
+      fill:'rgba(13,26,48,.9)',stroke:'rgba(0,200,224,.2)','stroke-width':'1'});
+    svg.appendChild(bg);
+    var t=el('text',{x:lb.x,y:lb.y,'text-anchor':'middle','dominant-baseline':'middle',
+      'font-size':'10','font-weight':'800',
+      'font-family':'Share Tech Mono,monospace',
+      fill:lb.c,'letter-spacing':'.1em'});
+    t.textContent=lb.text;svg.appendChild(t);
+  });
+}
+</script>
+</body>
+</html>
